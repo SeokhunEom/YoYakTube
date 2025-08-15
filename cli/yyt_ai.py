@@ -30,10 +30,11 @@ Examples:
 
 import argparse
 import json
+import os
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 import requests
 
 # 부모 디렉토리를 Python path에 추가
@@ -45,8 +46,6 @@ from yoyaktube.config import get_config
 
 def get_available_models() -> Dict[str, List[str]]:
     """사용 가능한 모델 목록을 제공자별로 반환"""
-    import os
-    
     models = {
         'openai': [],
         'gemini': [],
@@ -109,7 +108,6 @@ def list_models(provider: Optional[str] = None):
 
 def test_model(provider: str, model: str) -> bool:
     """모델 연결 테스트"""
-    import os
     
     print(f"모델 테스트: {provider}/{model}")
     
@@ -161,7 +159,6 @@ def test_model(provider: str, model: str) -> bool:
 
 def interactive_chat(provider: str, model: str):
     """모델과 직접 채팅"""
-    import os
     
     print(f"모델과 채팅: {provider}/{model}")
     print("종료하려면 'quit', 'exit', 또는 'q'를 입력하세요.")
@@ -206,7 +203,6 @@ def interactive_chat(provider: str, model: str):
 
 def benchmark_models(model_specs: List[str], test_prompt: str = "Explain what AI is in 50 words."):
     """모델 성능 벤치마크"""
-    import os
     
     print("모델 성능 벤치마크")
     print("=" * 60)

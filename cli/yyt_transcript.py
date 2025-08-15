@@ -16,7 +16,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 # 부모 디렉토리를 Python path에 추가
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -89,7 +89,7 @@ def extract_transcript(
     languages: List[str] = None,
     format_type: str = 'text',
     include_timestamps: bool = False
-) -> Tuple[str, str, Optional[str]]:
+):
     """
     자막을 추출하고 지정된 형식으로 변환
     

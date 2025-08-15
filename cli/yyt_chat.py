@@ -23,8 +23,8 @@ Examples:
 """
 
 import argparse
-import sys
 import json
+import sys
 from pathlib import Path
 from typing import List, Optional, Tuple
 
@@ -39,7 +39,7 @@ from yoyaktube.constants import QA_PROMPT
 from yoyaktube.config import get_config
 
 
-def get_transcript_from_video(video_input: str, languages: list = None) -> Tuple[str, Optional[dict]]:
+def get_transcript_from_video(video_input: str, languages: list = None):
     """영상에서 자막과 메타데이터를 추출"""
     if languages is None:
         languages = ['ko', 'en', 'ja']

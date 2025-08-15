@@ -16,14 +16,14 @@ import json
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import yt_dlp
 
 # 부모 디렉토리를 Python path에 추가
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from yoyaktube.utils import extract_video_id
+# No utilities needed for this module
 
 
 def parse_date_range(date_str: str) -> Tuple[datetime, datetime]:

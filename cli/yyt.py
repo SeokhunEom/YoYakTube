@@ -36,7 +36,7 @@ import argparse
 import sys
 import subprocess
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 # 부모 디렉토리를 Python path에 추가
 sys.path.insert(0, str(Path(__file__).parent.parent))

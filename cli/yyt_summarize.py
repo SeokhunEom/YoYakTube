@@ -25,7 +25,7 @@ Examples:
 import argparse
 import sys
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional
 
 # 부모 디렉토리를 Python path에 추가
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -38,7 +38,7 @@ from yoyaktube.constants import SYS_KO, FULL_SUMMARY_PROMPT
 from yoyaktube.config import get_config
 
 
-def get_transcript_from_video(video_input: str, languages: list = None) -> Tuple[Optional[str], Optional[dict], Optional[list]]:
+def get_transcript_from_video(video_input: str, languages: list = None):
     """영상에서 자막과 메타데이터를 추출"""
     if languages is None:
         languages = ['ko', 'en', 'ja']
@@ -90,6 +90,8 @@ def read_transcript_from_stdin() -> str:
 
 def create_llm_client(provider: str = None, model: str = None):
     """LLM 클라이언트를 생성"""
+    import os
+    
     config = get_config()
     
     # 기본값 설정
@@ -106,7 +108,6 @@ def create_llm_client(provider: str = None, model: str = None):
         model = model_map.get(provider, 'gpt-5-mini')
     
     # API 키 정보 가져오기
-    import os
     openai_key = os.getenv('OPENAI_API_KEY', '')
     gemini_key = os.getenv('GEMINI_API_KEY', '')
     ollama_host = os.getenv('OLLAMA_HOST', 'http://localhost:11434')

@@ -1,0 +1,1 @@
+"""YoYakTube CLI module"""
