@@ -7,8 +7,20 @@ import sys
 from pathlib import Path
 
 import requests
-import streamlit as st
-from tenacity import retry, stop_after_attempt, wait_exponential
+
+# Conditionally import tenacity (only needed for advanced retries)
+try:
+    from tenacity import retry, stop_after_attempt, wait_exponential
+    _HAS_TENACITY = True
+except ImportError:
+    _HAS_TENACITY = False
+
+# Conditionally import streamlit
+try:
+    import streamlit as st
+    _HAS_STREAMLIT = True
+except ImportError:
+    _HAS_STREAMLIT = False
 
 from .constants import LLM_CAPS, SS_LLM, SS_LLM_CFG, logger
 
@@ -38,10 +50,11 @@ def build_llm(
     try:
         return _get_or_create_llm(provider, model, openai_key, gemini_key, ollama_host)
     except ValueError as e:
-        if "OpenAI API Key" in str(e):
-            st.warning("OpenAI Key가 필요합니다.")
-        elif "Gemini API Key" in str(e):
-            st.warning("Gemini Key가 필요합니다.")
+        if _HAS_STREAMLIT:
+            if "OpenAI API Key" in str(e):
+                st.warning("OpenAI Key가 필요합니다.")
+            elif "Gemini API Key" in str(e):
+                st.warning("Gemini Key가 필요합니다.")
         # MockClient 대신 에러 재발생
         raise
 
@@ -61,14 +74,18 @@ def _current_llm_config(
 def get_or_create_llm(
     provider: str, model: str, openai_key: str, gemini_key: str, ollama_host: str
 ) -> LLMClient:
-    cfg = _current_llm_config(provider, model, openai_key, gemini_key, ollama_host)
-    if SS_LLM not in st.session_state or st.session_state.get(SS_LLM_CFG) != cfg:
-        st.session_state[SS_LLM] = build_llm(
-            provider, model, openai_key, gemini_key, ollama_host
-        )
-        st.session_state[SS_LLM_CFG] = cfg
-        logger.info("LLM instance (re)created: %s", cfg)
-    return st.session_state[SS_LLM]
+    if _HAS_STREAMLIT:
+        cfg = _current_llm_config(provider, model, openai_key, gemini_key, ollama_host)
+        if SS_LLM not in st.session_state or st.session_state.get(SS_LLM_CFG) != cfg:
+            st.session_state[SS_LLM] = build_llm(
+                provider, model, openai_key, gemini_key, ollama_host
+            )
+            st.session_state[SS_LLM_CFG] = cfg
+            logger.info("LLM instance (re)created: %s", cfg)
+        return st.session_state[SS_LLM]
+    else:
+        # For CLI usage, create a new instance each time
+        return build_llm(provider, model, openai_key, gemini_key, ollama_host)
 
 
 def supports_temperature(provider: str, model: str) -> bool:

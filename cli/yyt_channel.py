@@ -16,7 +16,7 @@ import json
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import yt_dlp
 
@@ -36,9 +36,14 @@ def parse_date_range(date_str: str) -> Tuple[datetime, datetime]:
         yesterday = today - timedelta(days=1)
         return yesterday, today
     elif date_str.isdigit():
-        days_ago = int(date_str)
-        start_date = today - timedelta(days=days_ago)
-        return start_date, today + timedelta(days=1)
+        # Check if it's a short number (days ago) or a date format (YYYYMMDD)
+        if len(date_str) <= 3:  # 1-3 digits, treat as days ago
+            days_ago = int(date_str)
+            start_date = today - timedelta(days=days_ago)
+            return start_date, today + timedelta(days=1)
+        else:  # 8 digits, treat as YYYYMMDD format
+            target_date = datetime.strptime(date_str, '%Y%m%d')
+            return target_date, target_date + timedelta(days=1)
     elif '-' in date_str:
         start_str, end_str = date_str.split('-', 1)
         start_date = datetime.strptime(start_str, '%Y%m%d')

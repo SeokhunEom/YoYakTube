@@ -31,8 +31,12 @@ from typing import List, Optional, Tuple
 # 같은 디렉토리의 core 모듈 import
 from .core import (
     ChatMessage, get_or_create_llm, collect_transcript, fetch_video_metadata,
-    extract_video_id, create_qa_context, get_config, QA_SYSTEM_PROMPT
+    extract_video_id, create_qa_context, get_config
 )
+
+# Add parent directory to Python path to access yoyaktube module
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from yoyaktube.constants import QA_PROMPT
 
 
 def get_transcript_from_video(video_input: str, languages: list = None):
@@ -104,15 +108,15 @@ def answer_question(
     question: str,
     provider: str = None,
     model: str = None,
-    context_history: List[dict] = None
+    context_history: Optional[List[dict]] = None
 ) -> str:
     """질문에 대한 답변 생성"""
     
     # LLM 클라이언트 생성
     llm = create_llm_client(provider, model)
     
-    # 컨텍스트 생성
-    context = create_qa_context(transcript, context_history)
+    # 컨텍스트 생성  
+    context = create_qa_context(transcript, context_history or [])
     
     # 메시지 구성
     messages = [
@@ -175,7 +179,7 @@ def interactive_chat(
             print("답변을 생성하는 중...")
             
             try:
-                answer = answer_question(transcript, question, provider, model, chat_history)
+                answer = answer_question(transcript, question, provider, model, context_history=chat_history)
                 
                 print(f"\n답변: {answer}\n")
                 

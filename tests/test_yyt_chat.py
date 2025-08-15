@@ -163,7 +163,7 @@ class TestYytChat(unittest.TestCase):
             "테스트 질문입니다",
             'openai',
             'gpt-5-mini',
-            []
+            context_history=[]
         )
         
         # Check that answer was printed

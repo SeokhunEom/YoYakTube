@@ -17,6 +17,11 @@ def _load_config_file() -> Optional[dict]:
     return _get_config()
 
 
+def get_config() -> dict:
+    """CLI core의 get_config를 래핑"""
+    return _get_config()
+
+
 def get_available_providers() -> List[str]:
     """CLI core의 get_config를 사용하여 제공자 목록 반환"""
     cfg = _get_config()

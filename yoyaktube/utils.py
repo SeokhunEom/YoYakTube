@@ -6,9 +6,13 @@ from typing import Optional
 import sys
 from pathlib import Path
 
-import streamlit as st
-
-from .state import get_summary_meta
+# Conditionally import streamlit-dependent modules
+try:
+    import streamlit as st
+    from .state import get_summary_meta
+    _HAS_STREAMLIT = True
+except ImportError:
+    _HAS_STREAMLIT = False
 from datetime import timedelta
 
 # CLI core 모듈 import
@@ -37,7 +41,7 @@ def make_summary_md(summary: str, vid: Optional[str]) -> str:
     if not summary:
         return ""
     link = f"https://www.youtube.com/watch?v={vid}" if vid else ""
-    meta = get_summary_meta()
+    meta = get_summary_meta() if _HAS_STREAMLIT else {}
     footer = (
         f"\n\n---\n_meta_: provider={meta.get('provider','')}, "
         f"model={meta.get('model','')}, prompt={meta.get('prompt_version','')}\n"
@@ -56,7 +60,7 @@ def make_combined_md(
 ) -> str:
     if not (summary or transcript):
         return ""
-    meta = get_summary_meta()
+    meta = get_summary_meta() if _HAS_STREAMLIT else {}
     parts = ["# 영상 요약 및 자막\n"]
     if vid:
         parts.append(f"- Video: https://www.youtube.com/watch?v={vid}\n")
@@ -108,10 +112,17 @@ def build_llm_summary_context(
 
 
 def show_error(title: str, hint: Optional[str] = None):
-    if hint:
-        st.error(f"{title}\n\n💡 {hint}")
+    if _HAS_STREAMLIT:
+        if hint:
+            st.error(f"{title}\n\n💡 {hint}")
+        else:
+            st.error(title)
     else:
-        st.error(title)
+        # Fallback for CLI usage
+        if hint:
+            print(f"Error: {title}\n💡 {hint}")
+        else:
+            print(f"Error: {title}")
 
 
 def explain_llm_error(e: Exception, *, text_errors: dict):

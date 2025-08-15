@@ -136,8 +136,10 @@ class TestYytConfig(unittest.TestCase):
     })
     def test_show_config(self, mock_get_path, mock_get_config, mock_get_providers, mock_print):
         """Test showing current configuration"""
-        mock_path = Path('/test/config.json')
+        from unittest.mock import MagicMock
+        mock_path = MagicMock()
         mock_path.exists.return_value = True
+        mock_path.__str__ = lambda: '/test/config.json'
         mock_get_path.return_value = mock_path
         
         mock_get_config.return_value = self.sample_config
