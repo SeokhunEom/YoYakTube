@@ -1,0 +1,20 @@
+# Test requirements for YoYakTube CLI tools
+# These are the minimal dependencies needed to run tests
+
+# Core dependencies that CLI tools actually need
+yt-dlp>=2023.1.6
+requests>=2.28.0
+
+# Optional - only install if you have streamlit in your environment
+# streamlit>=1.28.0
+
+# Test frameworks (optional but recommended)
+# pytest>=7.0.0
+# pytest-cov>=4.0.0
+
+# Note: Tests use mocks for external dependencies like:
+# - OpenAI API
+# - Google Gemini API  
+# - Ollama API
+# - YouTube/yt-dlp calls
+# So actual API keys are not required for testing
