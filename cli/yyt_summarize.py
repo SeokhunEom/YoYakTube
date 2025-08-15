@@ -27,15 +27,12 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-# 부모 디렉토리를 Python path에 추가
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from yoyaktube.llm import ChatMessage, get_or_create_llm
-from yoyaktube.transcript import collect_transcript, collect_transcript_entries
-from yoyaktube.metadata import fetch_video_metadata
-from yoyaktube.utils import extract_video_id, build_llm_summary_context, create_summary_markdown
-from yoyaktube.constants import SYS_KO, FULL_SUMMARY_PROMPT
-from yoyaktube.config import get_config
+# 같은 디렉토리의 core 모듈 import
+from .core import (
+    ChatMessage, get_or_create_llm, collect_transcript, collect_transcript_entries,
+    fetch_video_metadata, extract_video_id, build_llm_summary_context, get_config,
+    SYS_KO, FULL_SUMMARY_PROMPT
+)
 
 
 def get_transcript_from_video(video_input: str, languages: list = None):

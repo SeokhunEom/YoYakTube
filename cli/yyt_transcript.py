@@ -18,11 +18,8 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Optional
 
-# 부모 디렉토리를 Python path에 추가
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from yoyaktube.transcript import collect_transcript_entries, collect_transcript
-from yoyaktube.utils import extract_video_id
+# 같은 디렉토리의 core 모듈 import
+from .core import collect_transcript_entries, collect_transcript, extract_video_id
 
 
 def format_timestamp(seconds: float) -> str:

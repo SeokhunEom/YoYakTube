@@ -1,36 +1,30 @@
 from __future__ import annotations
 
 from typing import Optional, Dict, Any
+import sys
+from pathlib import Path
 
 import streamlit as st
 
+# CLI core 모듈 import
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from cli.core import fetch_video_metadata
+
 
 def _extract_with_yt_dlp(video_id: str) -> Optional[Dict[str, Any]]:
-    try:
-        from yt_dlp import YoutubeDL  # type: ignore
-    except Exception:
+    """CLI core 모듈의 fetch_video_metadata를 래핑"""
+    metadata = fetch_video_metadata(video_id)
+    if not metadata:
         return None
-
-    url = f"https://www.youtube.com/watch?v={video_id}"
-    ydl_opts = {
-        "quiet": True,
-        "skip_download": True,
-        "nocheckcertificate": True,
-        "extract_flat": True,
-        "http_headers": {"User-Agent": "Mozilla/5.0"},
+    
+    # 기존 형식에 맞게 변환
+    return {
+        "source_url": metadata.get("webpage_url"),
+        "duration": metadata.get("duration"),
+        "upload_date": metadata.get("upload_date"),
+        "title": metadata.get("title"),
+        "channel": metadata.get("uploader"),
     }
-    try:
-        with YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-        return {
-            "source_url": info.get("webpage_url") or url,
-            "duration": info.get("duration"),  # seconds
-            "upload_date": info.get("upload_date"),  # YYYYMMDD
-            "title": info.get("title"),
-            "channel": info.get("uploader"),
-        }
-    except Exception:
-        return None
 
 
 @st.cache_data(ttl=3600, show_spinner=False)

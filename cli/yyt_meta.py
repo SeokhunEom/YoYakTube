@@ -19,11 +19,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from datetime import datetime
 
-# 부모 디렉토리를 Python path에 추가
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from yoyaktube.metadata import fetch_video_metadata
-from yoyaktube.utils import extract_video_id, format_hms
+# 같은 디렉토리의 core 모듈 import
+from .core import fetch_video_metadata, extract_video_id, format_hms
 
 
 def format_metadata_table(metadata: Dict[str, Any]):

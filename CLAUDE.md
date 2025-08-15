@@ -90,3 +90,4 @@ Session keys are defined in `constants.py` and accessed through `state.py` wrapp
 - Main summarization prompt in `constants.py` as `FULL_SUMMARY_PROMPT`
 - Chat context construction utilities in `utils.py`
 - Version tracking for prompts via `PROMPT_VERSION` constant
+- 모든 작업 이후에는 반드시 작업 내용을 정리해서 commit을 해

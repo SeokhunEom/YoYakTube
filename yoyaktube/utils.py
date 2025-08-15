@@ -3,11 +3,17 @@ from __future__ import annotations
 import re
 import logging
 from typing import Optional
+import sys
+from pathlib import Path
 
 import streamlit as st
 
 from .state import get_summary_meta
 from datetime import timedelta
+
+# CLI core 모듈 import
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from cli.core import extract_video_id as _extract_video_id, format_hms as _format_hms, build_llm_summary_context as _build_llm_summary_context
 
 
 def provider_ready(
@@ -23,18 +29,8 @@ def provider_ready(
 
 
 def extract_video_id(url: str) -> Optional[str]:
-    from urllib.parse import parse_qs, urlparse
-
-    q = parse_qs(urlparse(url).query).get("v")
-    if q and len(q[0]) >= 10:
-        return q[0]
-    m = re.search(r"youtu\.be/([A-Za-z0-9_\-]{6,})", url)
-    if m:
-        return m.group(1)
-    m = re.search(r"/shorts/([A-Za-z0-9_\-]{6,})", url)
-    if m:
-        return m.group(1)
-    return None
+    """CLI core 모듈의 extract_video_id를 래핑"""
+    return _extract_video_id(url)
 
 
 def make_summary_md(summary: str, vid: Optional[str]) -> str:
@@ -89,17 +85,8 @@ def build_qa_context(
 
 
 def format_hms(seconds: Optional[float]) -> str:
-    if not seconds and seconds != 0:
-        return ""
-    try:
-        td = timedelta(seconds=int(seconds))
-        total_seconds = int(td.total_seconds())
-        hrs = total_seconds // 3600
-        mins = (total_seconds % 3600) // 60
-        secs = total_seconds % 60
-        return f"{hrs:02d}:{mins:02d}:{secs:02d}"
-    except Exception:
-        return ""
+    """CLI core 모듈의 format_hms를 래핑"""
+    return _format_hms(seconds)
 
 
 def build_llm_summary_context(
@@ -110,29 +97,14 @@ def build_llm_summary_context(
     transcript_entries: Optional[list],
     plain_transcript: Optional[str],
 ) -> str:
-    parts: list[str] = []
-    # Metadata header
-    if source_url:
-        parts.append(f"[SOURCE]\n{source_url}")
-    if duration_sec is not None:
-        parts.append(f"[DURATION]\n{format_hms(float(duration_sec))}")
-    if upload_date:
-        # Accept YYYYMMDD or other; pass through
-        parts.append(f"[UPLOAD_DATE]\n{upload_date}")
-    # Transcript body
-    if transcript_entries:
-        lines: list[str] = []
-        for e in transcript_entries:
-            t = e.get("text", "").strip()
-            if not t:
-                continue
-            ts = format_hms(float(e.get("start", 0.0)))
-            lines.append(f"[{ts}] {t}")
-        if lines:
-            parts.append("[TRANSCRIPT]\n" + "\n".join(lines))
-    elif plain_transcript:
-        parts.append("[TRANSCRIPT]\n" + plain_transcript)
-    return "\n\n".join(parts)
+    """CLI core 모듈의 build_llm_summary_context를 래핑"""
+    return _build_llm_summary_context(
+        source_url=source_url,
+        duration_sec=duration_sec,
+        upload_date=upload_date,
+        transcript_entries=transcript_entries,
+        plain_transcript=plain_transcript,
+    )
 
 
 def show_error(title: str, hint: Optional[str] = None):
